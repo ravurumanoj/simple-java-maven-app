@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/yourusername/yourrepository.git'
+                git 'https://github.com/ravurumanoj/simple-java-maven-app.git'
             }
         }
 
@@ -34,16 +34,18 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                def pom = readMavenPom file: 'pom.xml'                
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
                     protocol: 'https',
-                    nexusUrl: 'https://nexus.example.com',
-                    groupId: 'com.example',
-                    version: '1.0.0',
-                    repository: 'maven-snapshots',
+                    nexusUrl: 'http://52.91.128.112:8081/#admin/repository/repositories:maven-snapshot',
+                    groupId: pom.groupId,
+                    version: pom.version,
+                    repository: 'maven-snapshot',
                     credentialsId: "${NEXUS_CREDENTIALS}",
                     artifacts: [
-                        [artifactId: 'your-artifact', file: 'target/your-artifact-1.0.0.jar']
+                        [artifactId: pom.artifactId, file: "target/${pom.artifactId}-${pom.version}.jar",
+                            type: 'jar']
                     ]
                 )
             }
