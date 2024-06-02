@@ -1,54 +1,80 @@
 pipeline {
     agent any
-    
+ 
     environment {
-        NEXUS_CREDENTIALS = credentials('nexus-credentials-id')
+        // Define environment variables for tools
+        NEXUS_CREDENTIALS = 'nexus-credentials'  // The ID of the Nexus credentials
+        sonarqube-token = 'sonarqube-token'  // The ID of the SonarQube token
+        SONARQUBE_SERVER = 'SonarQube Server'  // The name of the SonarQube server configured in Jenkins
+        MAVEN_HOME = tool name: 'Maven 3', type: 'maven'
     }
-
+ 
     stages {
         stage('Checkout') {
             steps {
+                // Checkout code from the Git repository
                 git 'https://github.com/ravurumanoj/simple-java-maven-app.git'
             }
         }
-
+ 
         stage('Build') {
             steps {
-                sh 'mvn clean install -Dmaven.test.skip=true'
+                // Clean and build the Maven project
+                sh "${MAVEN_HOME}/bin/mvn clean install"
             }
         }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
+ 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQubeServer') {
-                    sh 'mvn sonar:sonar'
+                // Run SonarQube analysis with the token
+                withSonarQubeEnv(SONARQUBE_SERVER) {
+                    sh """
+                        ${MAVEN_HOME}/bin/mvn sonar:sonar \
+                        -Dsonar.login=${sonarqube-token}
+                    """
                 }
             }
         }
-
-        stage('Deploy') {
+ 
+        stage('Quality Gate') {
             steps {
-                pom = readMavenPom file: 'pom.xml'                
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'https',
-                    nexusUrl: 'http://52.91.128.112:8081/#admin/repository/repositories:maven-snapshot',
+                // Wait for the SonarQube analysis to be completed and check the quality gate status
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+ 
+        stage('Publish to Nexus') {
+            steps {
+                script {
+                    def pom = readMavenPom file: 'pom.xml'
+                    nexusArtifactUploader artifacts: [
+                        [
+                            artifactId: pom.artifactId,
+                            classifier: '',
+                            file: "target/${pom.artifactId}-${pom.version}.jar",
+                            type: 'jar'
+                        ]
+                    ],
+                    credentialsId: NEXUS_CREDENTIALS,
                     groupId: pom.groupId,
-                    version: pom.version,
-                    repository: 'maven-snapshot',
-                    credentialsId: "${NEXUS_CREDENTIALS}",
-                    artifacts: [
-                        [artifactId: pom.artifactId, file: "target/${pom.artifactId}-${pom.version}.jar",
-                            type: 'jar']
-                    ]
-                )
+                    nexusUrl: 'http://52.91.128.112:8081/#admin/repository/repositories:maven-snapshot',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'your-repository',
+                    version: pom.version
+                }
             }
         }
     }
+ 
+    post {
+        always {
+            // Clean up workspace after build
+            cleanWs()
+        }
+    }
 }
+
+
