@@ -6,7 +6,7 @@ pipeline {
         NEXUS_CREDENTIALS = 'nexus-credentials'  // The ID of the Nexus credentials
         // sonarqube-token = 'sonarqube-token'  // The ID of the SonarQube token
         SONARQUBE_SERVER = 'SonarQube Server'  // The name of the SonarQube server configured in Jenkins
-        MAVEN_HOME = tool name: 'Maven 3', type: 'maven'
+        MAVEN_HOME = tool name: 'MAVEN_HOME', type: 'maven'
     }
  
     stages {
