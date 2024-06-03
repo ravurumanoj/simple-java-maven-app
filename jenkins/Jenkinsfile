@@ -5,7 +5,7 @@ pipeline {
         // Define environment variables for tools
         NEXUS_CREDENTIALS = 'nexus-credentials'  // The ID of the Nexus credentials
         SONAR_TOKEN = 'sonarqube-token'  // The ID of the SonarQube token
-        SONARQUBE_SERVER = 'SonarQube Server'  // The name of the SonarQube server configured in Jenkins
+        SONARQUBE_SERVER = 'SONARQUBE_SERVER'  // The name of the SonarQube server configured in Jenkins
         MAVEN_HOME = tool name: 'MAVEN_HOME', type: 'maven'
     }
  
