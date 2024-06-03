@@ -29,7 +29,7 @@ pipeline {
                 withSonarQubeEnv(SONARQUBE_SERVER) {
                     sh """
                         ${MAVEN_HOME}/bin/mvn sonar:sonar \
-                        -Dsonar.projectKey=sonartest"
+                        -Dsonar.projectKey=sonartest
                     """
                 }
             }
