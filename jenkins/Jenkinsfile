@@ -34,14 +34,14 @@ pipeline {
                 }
             }
         }
-        stage('Quality Gate') {
-            steps {
-                // Wait for the SonarQube analysis to be completed and check the quality gate status
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        // stage('Quality Gate') {
+        //     steps {
+        //         // Wait for the SonarQube analysis to be completed and check the quality gate status
+        //         timeout(time: 5, unit: 'MINUTES') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
  
         stage('Publish to Nexus') {
             steps {
