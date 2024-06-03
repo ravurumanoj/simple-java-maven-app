@@ -43,28 +43,28 @@ pipeline {
             }
         }
  
-        // stage('Publish to Nexus') {
-        //     steps {
-        //         script {
-        //             def pom = readMavenPom file: 'pom.xml'
-        //             nexusArtifactUploader artifacts: [
-        //                 [
-        //                     artifactId: pom.artifactId,
-        //                     classifier: '',
-        //                     file: "target/${pom.artifactId}-${pom.version}.jar",
-        //                     type: 'jar'
-        //                 ]
-        //             ],
-        //             credentialsId: NEXUS_CREDENTIALS,
-        //             groupId: pom.groupId,
-        //             nexusUrl: 'http://52.91.128.112:8081/#admin/repository/repositories:maven-snapshot',
-        //             nexusVersion: 'nexus3',
-        //             protocol: 'http',
-        //             repository: 'your-repository',
-        //             version: pom.version
-        //         }
-        //     }
-        // }
+        stage('Publish to Nexus') {
+            steps {
+                script {
+                    def pom = readMavenPom file: 'pom.xml'
+                    nexusArtifactUploader artifacts: [
+                        [
+                            artifactId: pom.artifactId,
+                            classifier: '',
+                            file: "target/${pom.artifactId}-${pom.version}.jar",
+                            type: 'jar'
+                        ]
+                    ],
+                    credentialsId: NEXUS_CREDENTIALS,
+                    groupId: pom.groupId,
+                    nexusUrl: 'http://54.242.96.38:8081/repository/maven-snapshot/',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'maven-snapshot',
+                    version: pom.version
+                }
+            }
+        }
     }
  
     post {
