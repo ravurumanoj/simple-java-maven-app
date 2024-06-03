@@ -24,14 +24,16 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps{
-            withSonarQubeEnv() {
-              sh "${MAVEN_HOME}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonartest"
-            }
+         stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(SONARQUBE_SERVER) {
+                    sh """
+                        ${MAVEN_HOME}/bin/mvn sonar:sonar \
+                        -Dsonar.login=${SONARQUBE_CREDENTIALS}
+                    """
+                }
             }
         }
- 
         stage('Quality Gate') {
             steps {
                 // Wait for the SonarQube analysis to be completed and check the quality gate status
