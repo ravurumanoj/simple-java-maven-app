@@ -23,16 +23,10 @@ pipeline {
                 sh "${MAVEN_HOME}/bin/mvn clean install"
             }
         }
- 
+
         stage('SonarQube Analysis') {
-            steps {
-                // Run SonarQube analysis with the token
-                withSonarQubeEnv(SONARQUBE_SERVER) {
-                    sh """
-                        ${MAVEN_HOME}/bin/mvn sonar:sonar \
-                        -Dsonar.login=${SONAR_TOKEN}
-                    """
-                }
+            withSonarQubeEnv() {
+              sh "${MAVEN_HOME}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonartest"
             }
         }
  
