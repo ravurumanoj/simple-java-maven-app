@@ -57,7 +57,7 @@ pipeline {
                     ],
                     credentialsId: NEXUS_CREDENTIALS,
                     groupId: pom.groupId,
-                    nexusUrl: 'http://54.242.96.38:8081/repository/maven-snapshot/',
+                    nexusUrl: 'http://52.201.211.56:8081/repository/maven-snapshot/',
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'maven-snapshot',
